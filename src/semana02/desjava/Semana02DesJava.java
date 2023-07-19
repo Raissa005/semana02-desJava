@@ -3,11 +3,13 @@ package semana02.desjava;
 
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import views.SegundaInterface;
 
 public class Semana02DesJava {
    
     public static void main(String[] args) {        
-        metodoJoption();
+       // metodoJoption()
+       new SegundaInterface().setVisible(true);
     }
     
     public static void metodoScanner(){
