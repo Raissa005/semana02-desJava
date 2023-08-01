@@ -1,7 +1,12 @@
 
 package semana02.desjava;
 
+import java.awt.Image;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.io.File;
 import java.util.Scanner;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import views.PomodoroAdvence;
 //import views.SegundaInterface;
@@ -12,8 +17,28 @@ public class Semana02DesJava {
     public static void main(String[] args) {        
        // metodoJoption()
        new PomodoroAdvence().setVisible(true);
+       createIconTray();
     }
     
+   public static void createIconTray(){
+       if(SystemTray.isSupported()){
+            System.out.println("Sem suporte");
+            return;
+       }
+       String path = System.getProperty("user.dir") + File.separator + "semana02" +File.separator + "tray.png";
+       Image icon = (Image) new ImageIcon(path).getImage();
+       
+       Popup
+       TrayIcon tray = new TrayIcon(icon, "pomodoro");
+       
+       SystemTray bandeja = SystemTray.getSystemTray();
+       
+       try{
+           bandeja.add(tray);
+       }catch(Exception e){
+           System.out.println("Não foi possiveeel");
+       }
+   }       
     public static void metodoScanner(){
         
          String alunos[]= new String[5];

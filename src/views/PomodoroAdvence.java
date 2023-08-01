@@ -1,21 +1,37 @@
 
 package views;
-
+import Enum.Status;
 import java.awt.CardLayout;
+import java.awt.event.ActionEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
+import javax.swing.Timer;
 
 public class PomodoroAdvence extends javax.swing.JFrame {
 
    
     public PomodoroAdvence() {
         initComponents();
+       this.time = creatTimer();
     }
 
 private final int FOCUS_TIME = 25;
 private final int FAST_BREAK = 5;
 private final int LONG_BREAK_TIME = 15;
 private final int ROUNDS = 4;
+private Timer time;
+
+private int focusTime = 25;
+private int fastBreakTime = 5;
+private int longBreakTime = 15;
+private int roundsTime = 4;
+private int tempoRestante = 25*60;
+private boolean isStopped = true;
+
+private Status statusAtual = Status.PAUSED;
+private Status statusAnterior = null;
+private int countRound = 0;
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -24,18 +40,18 @@ private final int ROUNDS = 4;
         painelPrincip = new javax.swing.JPanel();
         timer = new javax.swing.JPanel();
         settingsButton = new javax.swing.JLabel();
-        playAndPause = new javax.swing.JLabel();
+        playButton = new javax.swing.JLabel();
         timerLabel = new javax.swing.JLabel();
         statusLabel = new javax.swing.JLabel();
         settings = new javax.swing.JPanel();
         fechaSettings = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         labelTempoFoco = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
+        label = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
         labelRounds = new javax.swing.JLabel();
-        labelBreakCurto = new javax.swing.JLabel();
+        LabelBreakCurto = new javax.swing.JLabel();
         sliderBreakCurto = new javax.swing.JSlider();
         sliderBreakLongo = new javax.swing.JSlider();
         sliderRounds = new javax.swing.JSlider();
@@ -58,8 +74,13 @@ private final int ROUNDS = 4;
             }
         });
 
-        playAndPause.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        playAndPause.setIcon(new javax.swing.ImageIcon(getClass().getResource("/semana02/play.png"))); // NOI18N
+        playButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        playButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/semana02/play.png"))); // NOI18N
+        playButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                playButtonMouseClicked(evt);
+            }
+        });
 
         timerLabel.setFont(new java.awt.Font("EngraversGothic BT", 1, 90)); // NOI18N
         timerLabel.setForeground(new java.awt.Color(0, 204, 153));
@@ -78,13 +99,15 @@ private final int ROUNDS = 4;
             .addGroup(timerLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(timerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(timerLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 933, Short.MAX_VALUE)
+                    .addComponent(timerLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 984, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, timerLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(settingsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
-                    .addComponent(playAndPause, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(playButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(timerLayout.createSequentialGroup()
+                        .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(220, 220, 220))))
         );
         timerLayout.setVerticalGroup(
             timerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -94,10 +117,10 @@ private final int ROUNDS = 4;
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(timerLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(playAndPause, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(140, 140, 140)
                 .addComponent(statusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(176, Short.MAX_VALUE))
+                .addContainerGap(57, Short.MAX_VALUE))
         );
 
         painelPrincip.add(timer, "timer");
@@ -119,9 +142,9 @@ private final int ROUNDS = 4;
         labelTempoFoco.setForeground(new java.awt.Color(0, 153, 153));
         labelTempoFoco.setText("25:00");
 
-        jLabel14.setFont(new java.awt.Font("DialogInput", 1, 24)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(0, 153, 102));
-        jLabel14.setText("BREAK CURTO");
+        label.setFont(new java.awt.Font("DialogInput", 1, 24)); // NOI18N
+        label.setForeground(new java.awt.Color(0, 153, 102));
+        label.setText("BREAK CURTO");
 
         jLabel18.setFont(new java.awt.Font("DialogInput", 1, 24)); // NOI18N
         jLabel18.setForeground(new java.awt.Color(0, 153, 102));
@@ -135,11 +158,12 @@ private final int ROUNDS = 4;
         labelRounds.setForeground(new java.awt.Color(0, 153, 153));
         labelRounds.setText("25:00");
 
-        labelBreakCurto.setFont(new java.awt.Font("Dutch801 Rm BT", 0, 24)); // NOI18N
-        labelBreakCurto.setForeground(new java.awt.Color(0, 153, 153));
-        labelBreakCurto.setText("5:00");
+        LabelBreakCurto.setFont(new java.awt.Font("Dutch801 Rm BT", 0, 24)); // NOI18N
+        LabelBreakCurto.setForeground(new java.awt.Color(0, 153, 153));
+        LabelBreakCurto.setText("5:00");
 
         sliderBreakCurto.setForeground(new java.awt.Color(0, 153, 153));
+        sliderBreakCurto.setMaximum(10);
         sliderBreakCurto.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 sliderBreakCurtoStateChanged(evt);
@@ -148,7 +172,6 @@ private final int ROUNDS = 4;
 
         sliderBreakLongo.setForeground(new java.awt.Color(0, 153, 153));
         sliderBreakLongo.setMaximum(30);
-        sliderBreakLongo.setMinimum(15);
         sliderBreakLongo.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 sliderBreakLongoStateChanged(evt);
@@ -163,6 +186,7 @@ private final int ROUNDS = 4;
         });
 
         sliderTempoFoco.setForeground(new java.awt.Color(0, 153, 153));
+        sliderTempoFoco.setMaximum(50);
         sliderTempoFoco.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 sliderTempoFocoStateChanged(evt);
@@ -197,7 +221,7 @@ private final int ROUNDS = 4;
                         .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(settingsLayout.createSequentialGroup()
                                 .addGap(386, 386, 386)
-                                .addComponent(labelBreakCurto))
+                                .addComponent(LabelBreakCurto))
                             .addGroup(settingsLayout.createSequentialGroup()
                                 .addGap(367, 367, 367)
                                 .addComponent(jLabel22))
@@ -210,18 +234,20 @@ private final int ROUNDS = 4;
                         .addGap(86, 491, Short.MAX_VALUE))
                     .addGroup(settingsLayout.createSequentialGroup()
                         .addGap(326, 326, 326)
-                        .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(sliderTempoFoco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))
+                        .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(fechaSettings))
                     .addGroup(settingsLayout.createSequentialGroup()
-                        .addGap(339, 339, 339)
-                        .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel14)
-                            .addComponent(sliderBreakCurto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(sliderBreakLongo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(sliderRounds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(329, 329, 329)
+                        .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(label)
+                                .addComponent(sliderBreakCurto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(sliderBreakLongo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(sliderRounds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(settingsLayout.createSequentialGroup()
+                                .addComponent(sliderTempoFoco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(10, 10, 10)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(settingsLayout.createSequentialGroup()
@@ -252,12 +278,12 @@ private final int ROUNDS = 4;
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addComponent(labelTempoFoco)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(15, 15, 15)
                 .addComponent(sliderTempoFoco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21)
-                .addComponent(jLabel14)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(label)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(labelBreakCurto)
+                .addComponent(LabelBreakCurto)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sliderBreakCurto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27)
@@ -270,7 +296,7 @@ private final int ROUNDS = 4;
                 .addComponent(labelRounds)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sliderRounds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                 .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(resetButton)
                     .addComponent(buttonAplic))
@@ -279,7 +305,7 @@ private final int ROUNDS = 4;
                 .addGroup(settingsLayout.createSequentialGroup()
                     .addGap(310, 310, 310)
                     .addComponent(labelBreakLongo)
-                    .addContainerGap(275, Short.MAX_VALUE)))
+                    .addContainerGap(276, Short.MAX_VALUE)))
         );
 
         painelPrincip.add(settings, "settings");
@@ -315,7 +341,7 @@ private final int ROUNDS = 4;
     }//GEN-LAST:event_sliderTempoFocoStateChanged
 
     private void sliderBreakCurtoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderBreakCurtoStateChanged
-      sliderLabel(sliderBreakCurto, labelBreakCurto);
+      sliderLabel(sliderBreakCurto, LabelBreakCurto);
     }//GEN-LAST:event_sliderBreakCurtoStateChanged
 
     private void sliderBreakLongoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderBreakLongoStateChanged
@@ -328,27 +354,53 @@ private final int ROUNDS = 4;
 
     private void buttonAplicActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAplicActionPerformed
         // TODO add your handling code here:
+        this.focusTime = this.sliderTempoFoco.getValue();
+        this.fastBreakTime = this.sliderBreakCurto.getValue();
+        this.longBreakTime = this.sliderBreakLongo.getValue();
+        this.roundsTime = this.sliderRounds.getValue();
+        this.tempoRestante = this.focusTime*60;
+        int minutes = tempoRestante /60;
+        int segundos = this.tempoRestante % 60;
+        timerLabel.setText(String.format("%02d:%02d", minutes, segundos));
+        changePanel("timer");
     }//GEN-LAST:event_buttonAplicActionPerformed
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
         this.sliderTempoFoco.setValue(this.FOCUS_TIME);
+        this.sliderBreakCurto.setValue(this.FAST_BREAK);
         this.sliderBreakCurto.setValue(this.LONG_BREAK_TIME);
         this.sliderRounds.setValue(this.ROUNDS);
     }//GEN-LAST:event_resetButtonActionPerformed
 
+    private void playButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playButtonMouseClicked
+        // TODO add your handling code here:
+        if(isStopped){
+            this.time.start();
+             this.playButton.setIcon(new ImageIcon(getClass().getResource("/semana02/pause.png")));
+             if(statusAnterior == null){
+                 statusAtual = Status.FOCUS_TIME;
+                 statusAnterior = Status.PAUSED;
+             }
+        }else{
+            this.time.stop();
+              this.playButton.setIcon(new ImageIcon(getClass().getResource("/semana02/play.png"))); 
+        }
+        this.isStopped = !this.isStopped;
+    }//GEN-LAST:event_playButtonMouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel LabelBreakCurto;
     private javax.swing.JButton buttonAplic;
     private javax.swing.JLabel fechaSettings;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel labelBreakCurto;
+    private javax.swing.JLabel label;
     private javax.swing.JLabel labelBreakLongo;
     private javax.swing.JLabel labelRounds;
     private javax.swing.JLabel labelTempoFoco;
     private javax.swing.JPanel painelPrincip;
-    private javax.swing.JLabel playAndPause;
+    private javax.swing.JLabel playButton;
     private javax.swing.JButton resetButton;
     private javax.swing.JPanel settings;
     private javax.swing.JLabel settingsButton;
@@ -368,7 +420,45 @@ private final int ROUNDS = 4;
     
       private void sliderLabel(JSlider slider, JLabel label){
          int value = slider.getValue();
-       String valueFormat = String.format("%o2d:%02d", value, 00);
+       String valueFormat = String.format("%02d:%02d", value, 00);
        label.setText(valueFormat);
     }
-}
+      
+      private Timer creatTimer (){
+        return new Timer(1000, (ActionEvent e) -> { 
+            updateTime(); //a cada 1 segundo chama essa função
+        });
+      }
+      private void updateTime(){
+          this.tempoRestante--; 
+          int minutos = this.tempoRestante /60; //calcula os minutos
+          int segundos = this.tempoRestante%60; //calcula os segundos
+          this.timerLabel.setText(String.format("%02d:%02d", minutos, segundos));
+          if(this.tempoRestante >= 0){
+              this.changeStatus();
+          }
+      }
+      private void changeStatus(){
+          if(this.statusAtual == Status.FOCUS_TIME && this.roundsTime == this.countRound){
+              this.statusAtual = Status.BREAK_FAST;
+              this.statusAnterior = Status.FOCUS_TIME;
+              this.countRound = 0;
+              this.tempoRestante = this.longBreakTime*60;
+      }else if(this.statusAtual == Status.BREAK_FAST){
+            this.statusAtual = Status.BREAK_FAST;
+            this.statusAnterior = Status.FOCUS_TIME;
+            this.countRound--;
+            this.tempoRestante = this.fastBreakTime*60;
+            }else if (this.statusAtual == Status.BREAK_FAST){
+                this.statusAtual= Status.FOCUS_TIME;
+                this.statusAnterior = Status.BRAK_LONG;
+                this.tempoRestante = this.focusTime*60;
+                this.countRound--;
+            }else if(this.statusAtual == Status.BRAK_LONG){
+                    this.statusAtual= Status.FOCUS_TIME;
+                this.statusAnterior = Status.BRAK_LONG;
+                this.tempoRestante = this.focusTime*60;
+                this.countRound--;
+            }
+      }
+}     
